@@ -12,12 +12,13 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- SEGURANÇA / CONEXÃO ---
+// LÊ A VARIÁVEL DE AMBIENTE DO RENDER
 const mongoURI = process.env.MONGODB_URI;
 
 console.log("Iniciando servidor...");
 
 if (!mongoURI) {
-    console.error("❌ ERRO: MONGODB_URI não definida.");
+    console.error("❌ ERRO: MONGODB_URI não definida. Verifique as variáveis de ambiente no Render.");
 } else {
     mongoose.connect(mongoURI)
         .then(() => console.log('✅ MongoDB Conectado!'))
@@ -58,7 +59,7 @@ app.post('/api/jogos', async (req, res) => {
     }
 });
 
-// NOVA ROTA: DELETAR JOGO
+// DELETAR JOGO (Funcionalidade Admin)
 app.delete('/api/jogos/:id', async (req, res) => {
     try {
         await Jogo.findByIdAndDelete(req.params.id);
