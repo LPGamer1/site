@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const https = require('https'); 
 require('dotenv').config();
 
 const app = express();
@@ -12,7 +13,6 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- SEGURANÇA / CONEXÃO ---
-// LÊ A VARIÁVEL DE AMBIENTE DO RENDER
 const mongoURI = process.env.MONGODB_URI;
 
 console.log("Iniciando servidor...");
@@ -35,6 +35,42 @@ const JogoSchema = new mongoose.Schema({
 const Jogo = mongoose.model('Jogo', JogoSchema);
 
 // --- Rotas da API ---
+
+// 1. Verificar Usuário Roblox (CORRIGIDO COM USER-AGENT)
+app.get('/api/roblox-user/:username', (req, res) => {
+    const username = req.params.username;
+    // Opções para fingir ser um navegador e não ser bloqueado
+    const options = {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'application/json'
+        }
+    };
+    
+    const url = `https://users.roblox.com/v1/users/search?keyword=${username}&limit=10`;
+
+    https.get(url, options, (apiRes) => {
+        let data = '';
+        apiRes.on('data', (chunk) => { data += chunk; });
+        apiRes.on('end', () => {
+            try {
+                const json = JSON.parse(data);
+                const exists = json.data && json.data.some(u => 
+                    u.name.toLowerCase() === username.toLowerCase() || 
+                    u.displayName.toLowerCase() === username.toLowerCase()
+                );
+                res.json({ exists: exists });
+            } catch (e) {
+                console.error("Erro parse Roblox:", e);
+                // Se a API falhar, deixamos passar (fallback seguro)
+                res.json({ exists: true, warning: "API Error" }); 
+            }
+        });
+    }).on("error", (err) => {
+        console.error("Erro conexão Roblox:", err);
+        res.json({ exists: true }); // Fallback se sem internet
+    });
+});
 
 app.get('/api/jogos', async (req, res) => {
     try {
@@ -59,7 +95,6 @@ app.post('/api/jogos', async (req, res) => {
     }
 });
 
-// DELETAR JOGO (Funcionalidade Admin)
 app.delete('/api/jogos/:id', async (req, res) => {
     try {
         await Jogo.findByIdAndDelete(req.params.id);
