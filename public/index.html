@@ -124,7 +124,8 @@
         <div class="roblox-modal w-full max-w-[400px] p-6 relative">
             <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="roblox-header mt-4">Login</h2>
-            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fgamedown.onrender.com%2Fsucess&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
+            <!-- LINK DISCORD ATUALIZADO AQUI -->
+            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fhunter-bot-verify.onrender.com%2Fauth2&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
                 <i class="fa-brands fa-discord text-xl"></i> Login por Discord
             </a>
             <button onclick="abrirFormularioRoblox()" class="bg-[#232527] border border-white hover:bg-[#2b2d31] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 transition">
@@ -189,6 +190,7 @@
         window.onload = () => {
             carregarJogos();
             carregarPerfilLocal();
+            // Mantém a verificação de retorno de sucesso caso a verificação redirecione de volta
             if(window.location.href.includes("sucess")) {
                 bgBlur.style.display = 'block';
                 modalUsername.classList.remove('hidden');
@@ -269,7 +271,6 @@
                     else alert("Erro ao excluir.");
                 } else {
                     let l = JSON.parse(localStorage.getItem('mock_jogos')||'[]');
-                    // Em mock é difícil sem ID, mas vamos tentar por nome se não tiver ID
                     l = l.filter(x => x._id !== id && x.nome !== nome); 
                     localStorage.setItem('mock_jogos',JSON.stringify(l));
                     carregarJogos();
@@ -347,7 +348,7 @@
             if(adm){ 
                 btnUpload.classList.remove('hidden'); 
                 btnUpload.style.display='flex';
-                carregarJogos(); // Recarrega para mostrar botões de excluir
+                carregarJogos(); 
             } 
         }
 
