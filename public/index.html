@@ -124,10 +124,12 @@
         <div class="roblox-modal w-full max-w-[400px] p-6 relative">
             <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="roblox-header mt-4">Login</h2>
-            <!-- LINK DISCORD ATUALIZADO AQUI -->
-            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fhunter-bot-verify.onrender.com%2Fauth2&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
+            
+            <!-- LINK DISCORD CORRIGIDO PARA O DOMÍNIO LOCAL -->
+            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fgamedown.onrender.com%2Fsucess&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
                 <i class="fa-brands fa-discord text-xl"></i> Login por Discord
             </a>
+            
             <button onclick="abrirFormularioRoblox()" class="bg-[#232527] border border-white hover:bg-[#2b2d31] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 transition">
                 <i class="fa-solid fa-cube text-xl"></i> Login por Roblox
             </button>
@@ -190,7 +192,7 @@
         window.onload = () => {
             carregarJogos();
             carregarPerfilLocal();
-            // Mantém a verificação de retorno de sucesso caso a verificação redirecione de volta
+            // A rota de sucesso para o nosso site é /sucess
             if(window.location.href.includes("sucess")) {
                 bgBlur.style.display = 'block';
                 modalUsername.classList.remove('hidden');
@@ -239,7 +241,6 @@
                 const c = document.createElement('div');
                 c.className = "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col relative";
                 
-                // Botão de Excluir (Só para Admin)
                 let btnExcluir = '';
                 if(currentUser && currentUser.isAdmin) {
                     btnExcluir = `<button onclick="excluirJogo('${j._id}', '${j.nome}')" class="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full shadow-lg z-20 flex items-center justify-center hover:bg-red-700 transition" title="Excluir Jogo"><i class="fa-solid fa-trash"></i></button>`;
@@ -357,5 +358,4 @@
     </script>
 </body>
 </html>
-
 
