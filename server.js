@@ -11,23 +11,17 @@ app.use(cors());
 // Serve os arquivos da pasta public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- SEGURANÇA CORRIGIDA ---
-// O código agora busca a senha nas "Variáveis de Ambiente" do Render ou do arquivo .env
-// Se não encontrar, usa uma string vazia (o que vai gerar erro no log, avisando para configurar)
+// --- SEGURANÇA / CONEXÃO ---
 const mongoURI = process.env.MONGODB_URI;
 
 console.log("Iniciando servidor...");
 
 if (!mongoURI) {
-    console.error("❌ ERRO FATAL: A variável MONGODB_URI não está definida.");
-    console.error("DICA: No Render, vá em 'Environment Variables' e adicione a Key: MONGODB_URI com o seu link de conexão.");
+    console.error("❌ ERRO: MONGODB_URI não definida.");
 } else {
     mongoose.connect(mongoURI)
-        .then(() => console.log('✅ MongoDB Conectado com Sucesso!'))
-        .catch(err => {
-            console.error('❌ ERRO DE CONEXÃO:', err);
-            console.error('DICA: Verifique se o IP 0.0.0.0/0 está liberado no MongoDB Atlas.');
-        });
+        .then(() => console.log('✅ MongoDB Conectado!'))
+        .catch(err => console.error('❌ Erro Mongo:', err));
 }
 
 // Modelo do Jogo
@@ -49,23 +43,29 @@ app.get('/api/jogos', async (req, res) => {
         const jogos = await Jogo.find(query).sort({ data: -1 });
         res.json(jogos);
     } catch (err) {
-        console.error("Erro ao listar:", err);
         res.status(500).json({ erro: 'Erro ao buscar jogos.' });
     }
 });
 
 app.post('/api/jogos', async (req, res) => {
     try {
-        if (!req.body.nome || !req.body.link) {
-            return res.status(400).json({ erro: 'Preencha nome e link' });
-        }
+        if (!req.body.nome || !req.body.link) return res.status(400).json({ erro: 'Dados incompletos' });
         const novoJogo = new Jogo(req.body);
         await novoJogo.save();
-        console.log("Jogo salvo:", req.body.nome);
         res.status(201).json(novoJogo);
     } catch (err) {
-        console.error("Erro ao salvar:", err);
-        res.status(500).json({ erro: 'Erro ao salvar no banco.' });
+        res.status(500).json({ erro: 'Erro ao salvar.' });
+    }
+});
+
+// NOVA ROTA: DELETAR JOGO
+app.delete('/api/jogos/:id', async (req, res) => {
+    try {
+        await Jogo.findByIdAndDelete(req.params.id);
+        res.json({ mensagem: "Jogo deletado com sucesso" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ erro: 'Erro ao deletar.' });
     }
 });
 
