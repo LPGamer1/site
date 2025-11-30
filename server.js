@@ -11,18 +11,24 @@ app.use(cors());
 // Serve os arquivos da pasta public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- CONEXÃO MONGODB (Seu Link Oficial) ---
-// Esse link conecta diretamente com seu usuário 'admin' e senha 'lp'
-const mongoURI = "mongodb+srv://admin:lp@cluster0.xdryvsn.mongodb.net/?appName=Cluster0";
+// --- SEGURANÇA CORRIGIDA ---
+// O código agora busca a senha nas "Variáveis de Ambiente" do Render ou do arquivo .env
+// Se não encontrar, usa uma string vazia (o que vai gerar erro no log, avisando para configurar)
+const mongoURI = process.env.MONGODB_URI;
 
-console.log("Tentando conectar ao MongoDB..."); 
+console.log("Iniciando servidor...");
 
-mongoose.connect(mongoURI)
-    .then(() => console.log('✅ MongoDB Conectado com Sucesso!'))
-    .catch(err => {
-        console.error('❌ ERRO DE CONEXÃO:', err);
-        console.error('DICA IMPORTANTE: Se deu erro aqui, vá no MongoDB Atlas > Network Access e adicione o IP 0.0.0.0/0');
-    });
+if (!mongoURI) {
+    console.error("❌ ERRO FATAL: A variável MONGODB_URI não está definida.");
+    console.error("DICA: No Render, vá em 'Environment Variables' e adicione a Key: MONGODB_URI com o seu link de conexão.");
+} else {
+    mongoose.connect(mongoURI)
+        .then(() => console.log('✅ MongoDB Conectado com Sucesso!'))
+        .catch(err => {
+            console.error('❌ ERRO DE CONEXÃO:', err);
+            console.error('DICA: Verifique se o IP 0.0.0.0/0 está liberado no MongoDB Atlas.');
+        });
+}
 
 // Modelo do Jogo
 const JogoSchema = new mongoose.Schema({
@@ -35,7 +41,6 @@ const Jogo = mongoose.model('Jogo', JogoSchema);
 
 // --- Rotas da API ---
 
-// Listar jogos
 app.get('/api/jogos', async (req, res) => {
     try {
         const { busca } = req.query;
@@ -49,16 +54,13 @@ app.get('/api/jogos', async (req, res) => {
     }
 });
 
-// Criar jogo
 app.post('/api/jogos', async (req, res) => {
     try {
         if (!req.body.nome || !req.body.link) {
             return res.status(400).json({ erro: 'Preencha nome e link' });
         }
-
         const novoJogo = new Jogo(req.body);
         await novoJogo.save();
-        
         console.log("Jogo salvo:", req.body.nome);
         res.status(201).json(novoJogo);
     } catch (err) {
@@ -67,7 +69,6 @@ app.post('/api/jogos', async (req, res) => {
     }
 });
 
-// Rota para qualquer outra URL (Frontend)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
