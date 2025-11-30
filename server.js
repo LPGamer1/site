@@ -7,15 +7,17 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public'))); // <-- Coloque o index.html na pasta /public
 
-// MongoDB
+// Serve os arquivos da pasta public (onde está o index.html)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Conexão MongoDB
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/gamedown';
 mongoose.connect(mongoURI)
     .then(() => console.log('MongoDB conectado'))
     .catch(err => console.error('Erro MongoDB:', err));
 
-// Schema
+// Modelo do Jogo
 const JogoSchema = new mongoose.Schema({
     nome: String,
     capa: String,
@@ -24,7 +26,9 @@ const JogoSchema = new mongoose.Schema({
 });
 const Jogo = mongoose.model('Jogo', JogoSchema);
 
-// Rotas API
+// --- Rotas da API ---
+
+// Listar jogos
 app.get('/api/jogos', async (req, res) => {
     try {
         const jogos = await Jogo.find().sort({ data: -1 });
@@ -34,6 +38,7 @@ app.get('/api/jogos', async (req, res) => {
     }
 });
 
+// Criar jogo (Upload Admin)
 app.post('/api/jogos', async (req, res) => {
     try {
         const novoJogo = new Jogo(req.body);
@@ -44,10 +49,12 @@ app.post('/api/jogos', async (req, res) => {
     }
 });
 
-// Servir o site
+// Rota coringa: Qualquer outra URL retorna o index.html
+// Isso é essencial para o /sucess funcionar
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+
