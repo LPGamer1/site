@@ -17,7 +17,7 @@ MONGO_URL = os.environ.get("MONGO_URL")
 
 # LINK DO SEU BANNER (A imagem amarela "TUDO POR 1 REAL")
 # Coloque o link direto da imagem aqui (tem que terminar em .png ou .jpg)
-BANNER_LINK = "https://media.discordapp.net/attachments/SEU_LINK_DA_IMAGEM.png"
+BANNER_LINK = "https://cdn.discordapp.com/attachments/1446924629464715275/1446943992272126052/1765048714287.jpg?ex=6935d31a&is=6934819a&hm=8caabf0541ec43e1374106bc592cf799dc1f6e0fcda6f340e3e5a8eb3bbe59b1&"
 
 # --- INICIALIZAÇÃO ---
 
