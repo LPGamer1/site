@@ -3,3 +3,4 @@ mercadopago
 motor
 dnspython
 python-dotenv
+aiohttp
